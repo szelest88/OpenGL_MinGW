@@ -1,0 +1,1 @@
+g++ -o hello.exe hello.cpp -lmingw32 -lSDL2main -lSDL2 -mwindows
