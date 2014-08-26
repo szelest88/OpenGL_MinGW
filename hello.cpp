@@ -39,7 +39,10 @@ glewInit(); // has to be initialized after creating a window and the context
 float vertices[] = {
      0.0f,  0.5f, // Vertex 1 (X, Y)
      0.5f, -0.5f, // Vertex 2 (X, Y)
-    -0.5f, -0.5f  // Vertex 3 (X, Y)
+    -0.5f, -0.5f,  // Vertex 3 (X, Y)
+     0.0f, 0.5f+0.5f, // Vertex 1 (X, Y)
+     0.5f, 0.5f-0.5f, // Vertex 2 (X, Y)
+    -0.5f, 0.5f-0.5f  // Vertex 3 (X, Y)
 };
 
 
@@ -86,7 +89,7 @@ while(true){
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
     SDL_GL_SwapWindow(window);
 }
