@@ -7,16 +7,25 @@
 
 const GLchar* vertexShaderSource =
  "#version 150 core\n"
+ "in vec3 color;"
+ "out vec3 Color;"
+ "in vec2 texcoord;"
+ "out vec2 Texcoord;"
  "in vec2 position;"
  "void main() {"
+ "Color = color;"
+ " Texcoord = texcoord;"
  " gl_Position = vec4(position, 0.0, 1.0);"
  "}";
 
  const GLchar* fragmentShaderSource =
  "#version 150 core\n"
+ "in vec3 Color;"
+ "in vec2 Texcoord;"
  "out vec4 outColor;"
+ "uniform sampler2D tex;"
  "void main() {"
- " outColor = vec4(1.0, 1.0, 0.0, 0.5);"
+     "   outColor = texture(tex, Texcoord)*vec4(Color, 1.0);"
  "}";
 
  
@@ -37,14 +46,49 @@ glewExperimental = GL_TRUE;
 glewInit(); // has to be initialized after creating a window and the context
 
 float vertices[] = {
-     0.0f,  0.5f, // Vertex 1 (X, Y)
-     0.5f, -0.5f, // Vertex 2 (X, Y)
-    -0.5f, -0.5f,  // Vertex 3 (X, Y)
-     0.0f, 0.5f+0.5f, // Vertex 1 (X, Y)
-     0.5f, 0.5f-0.5f, // Vertex 2 (X, Y)
-    -0.5f, 0.5f-0.5f  // Vertex 3 (X, Y)
+     0.0f, 0.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f, // Vertex 1 (X, Y)
+     1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f,  // Vertex 2 (X, Y)
+     0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f,  // Vertex 3 (X, Y)
+     1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f, // Vertex 1 (X, Y)
+     0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // Vertex 2 (X, Y)
+     1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f  // Vertex 3 (X, Y)
 };
 
+GLuint tex;
+glGenTextures(1, &tex);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+float color[]={ 0.0f, 0.0f, 0.0f, 1.0f };
+glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // LINEAR causes sort of blurry appearance
+
+glGenerateMipmap(GL_TEXTURE_2D);
+
+float pixels[] = {
+    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+
+    1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+
+    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+
+    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f
+
+};
+// or load...
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 4, 8, 0, GL_RGB, GL_FLOAT, pixels);
 
 GLuint vertexArrayObject; // now test if glew has been initialized correctly
 glGenVertexArrays(1, &vertexArrayObject);
@@ -73,7 +117,20 @@ glUseProgram(shaderProgram);
 
 GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 glEnableVertexAttribArray(posAttrib);
-glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
+glEnableVertexAttribArray(colAttrib);
+
+GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+glEnableVertexAttribArray(texAttrib);
+
+glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
+
+glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), 
+    (void*)(2*sizeof(float)));
+
+glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 
+    (void*)(5*sizeof(float)));
 
 SDL_Event windowEvent;
 while(true){
