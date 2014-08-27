@@ -65,30 +65,19 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // LINEAR cau
 
 glGenerateMipmap(GL_TEXTURE_2D);
 
-float pixels[] = {
-    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-
-    1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-
-    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-
-    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f
-
+unsigned char pixels[] = 
+{   
+      0,    0,  255,          0,    0,  255,        0,    0,  255,       155,  155,  0,
+      0,    0,  255,          0,    0,  255,        0,    0,  255,       155,  155,  0,
+      0,    0,  255,          0,    0,  255,        0,    0,  255,       155,  155,  0,
+    155,  140,  240,        185,  185,    0,        155, 155,  0,          0,  155,  0
 };
 // or load...
-glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 4, 8, 0, GL_RGB, GL_FLOAT, pixels);
+int textureWidth  = 4;
+int textureHeight = 4;
+glTexImage2D(
+    GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, 
+    pixels);
 
 GLuint vertexArrayObject; // now test if glew has been initialized correctly
 glGenVertexArrays(1, &vertexArrayObject);
