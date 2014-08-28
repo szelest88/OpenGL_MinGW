@@ -5,7 +5,12 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "BmpObject.h"
+#include "BmpObject.h" // for BMP loading
+
+#define GLM_FORCE_RADIANS // has to be defined before glm includes in order to avoid compile-time warnings
+#include <glm/glm.hpp>  
+#include <glm/gtc/matrix_transform.hpp>  
+#include <glm/gtc/type_ptr.hpp>
 
 const GLchar* vertexShaderSource =
  "#version 150 core\n"
@@ -14,10 +19,13 @@ const GLchar* vertexShaderSource =
  "in vec2 texcoord;"
  "out vec2 Texcoord;"
  "in vec2 position;"
+ 
+ "uniform mat4 trans;"
+
  "void main() {"
  "Color = color;"
  " Texcoord = texcoord;"
- " gl_Position = vec4(position, 0.0, 1.0);"
+ " gl_Position = trans * vec4(position, 0.0, 1.0);"
  "}";
 
  const GLchar* fragmentShaderSource =
@@ -48,12 +56,12 @@ glewExperimental = GL_TRUE;
 glewInit(); // has to be initialized after creating a window and the context
 
 float vertices[] = {
-     0.0f, 0.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // Vertex 1 (X, Y)
-     1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f,  // Vertex 2 (X, Y)
-     0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f,  // Vertex 3 (X, Y)
-     1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f, // Vertex 1 (X, Y)
-     0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f, // Vertex 2 (X, Y)
-     1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f  // Vertex 3 (X, Y)
+     -0.5f, -0.5f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // Vertex 1 (X, Y)
+     0.5f, -0.5f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f,  // Vertex 2 (X, Y)
+     -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f,  // Vertex 3 (X, Y)
+     0.5f, -0.5f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f, // Vertex 1 (X, Y)
+     -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f, // Vertex 2 (X, Y)
+     0.5f, 0.5f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f  // Vertex 3 (X, Y)
 };
 
 GLuint tex;
@@ -110,6 +118,8 @@ glBindFragDataLocation(shaderProgram, 0, "outColor");
 glLinkProgram(shaderProgram);
 glUseProgram(shaderProgram);
 
+// attribute variables
+
 GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 glEnableVertexAttribArray(posAttrib);
 
@@ -126,6 +136,14 @@ glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float),
 
 glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 
     (void*)(5*sizeof(float)));
+
+// uniform variables
+
+glm::mat4 trans;
+trans = glm::rotate(trans, 45.0f*3.1415f/180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+GLint uniTrans = glGetUniformLocation(shaderProgram, "trans");
+glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
 
 SDL_Event windowEvent;
 while(true){
