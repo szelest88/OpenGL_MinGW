@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "BmpObject.h"
+
 const GLchar* vertexShaderSource =
  "#version 150 core\n"
  "in vec3 color;"
@@ -46,12 +48,12 @@ glewExperimental = GL_TRUE;
 glewInit(); // has to be initialized after creating a window and the context
 
 float vertices[] = {
-     0.0f, 0.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f, // Vertex 1 (X, Y)
-     1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f,  // Vertex 2 (X, Y)
-     0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f,  // Vertex 3 (X, Y)
-     1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f, // Vertex 1 (X, Y)
-     0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // Vertex 2 (X, Y)
-     1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f  // Vertex 3 (X, Y)
+     0.0f, 0.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // Vertex 1 (X, Y)
+     1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f,  // Vertex 2 (X, Y)
+     0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f,  // Vertex 3 (X, Y)
+     1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f, // Vertex 1 (X, Y)
+     0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f, // Vertex 2 (X, Y)
+     1.0f, 1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f  // Vertex 3 (X, Y)
 };
 
 GLuint tex;
@@ -64,7 +66,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // LINEAR causes sort of blurry appearance
 
 glGenerateMipmap(GL_TEXTURE_2D);
-
+/*
 unsigned char pixels[] = 
 {   
       0,    0,  255,          0,    0,  255,        0,    0,  255,       155,  155,  0,
@@ -72,11 +74,15 @@ unsigned char pixels[] =
       0,    0,  255,          0,    0,  255,        0,    0,  255,       155,  155,  0,
     155,  140,  240,        185,  185,    0,        155, 155,  0,          0,  155,  0
 };
+*/
 // or load...
-int textureWidth  = 4;
-int textureHeight = 4;
+BmpObject* bmpObject = new BmpObject("LenaRGB.bmp");
+unsigned char* pixels = bmpObject->data;
+cout<<"\n\nPixels: "<<bmpObject->width;
+int textureWidth  = bmpObject->width;
+int textureHeight = bmpObject->height;
 glTexImage2D(
-    GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, 
+    GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, 
     pixels);
 
 GLuint vertexArrayObject; // now test if glew has been initialized correctly

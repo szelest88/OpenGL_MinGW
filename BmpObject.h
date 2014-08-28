@@ -4,7 +4,10 @@
 using namespace std;
 
 class BmpObject{
+private:
+	BmpObject(); // eeekhm... has to be? :F
 	public:
-		char* data;
+		unsigned char* data;
+		int width, height;
 		BmpObject(string filename);
 };
